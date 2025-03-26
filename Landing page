@@ -4,6 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Tool Finder</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6e7e8e, #3a4d63);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 600px;
+        }
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            background-color: #fff;
+            color: #333;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input:focus {
+            border: 2px solid #2ecc71;
+            box-shadow: 0 0 5px rgba(46, 204, 113, 0.8);
+        }
+        button {
+            background-color: #2ecc71;
+            color: #fff;
+            font-size: 1.2rem;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #27ae60;
+            transform: scale(1.05);
+        }
+        #response {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #f39c12;
+            font-weight: 500;
+        }
+        .loading {
+            color: #3498db;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>AI Tool Finder</h2>
+        <label for="question" style="font-size: 1.1rem;">Ask about AI tools for a specific task:</label><br>
+        <input type="text" id="question" placeholder="e.g., image generation, text summarization" />
+        <br>
+        <button onclick="askAI()">Find AI Tools</button>
+        <p id="response" class="loading"></p>
+    </div>
+
     <script>
         async function askAI() {
             const userQuery = document.getElementById("question").value;
@@ -21,27 +100,26 @@
                 },
                 body: JSON.stringify({
                     model: "gpt-4",
-                    messages: [{ role: "system", content: "You are an assistant that provides recommendations for AI tools based on user queries." },
-                               { role: "user", content: `What AI tools can I use for ${userQuery}?` }],
+                    messages: [
+                        { role: "system", content: "You are an assistant that provides recommendations for AI tools based on user queries." },
+                        { role: "user", content: `What AI tools can I use for ${userQuery}?` }
+                    ],
                     temperature: 0.7
                 })
             };
 
             try {
                 const response = await fetch(apiUrl, requestOptions);
-                const data = await response.json();
-                responseBox.innerHTML = data.choices[0].message.content;
+                if (response.ok) {
+                    const data = await response.json();
+                    responseBox.innerHTML = data.choices[0].message.content;
+                } else {
+                    responseBox.innerHTML = "Error: " + response.statusText;
+                }
             } catch (error) {
                 responseBox.innerHTML = "Error retrieving response. Please try again.";
             }
         }
     </script>
-</head>
-<body>
-    <h2>AI Tool Finder</h2>
-    <label for="question">Enter a task you need AI tools for:</label>
-    <input type="text" id="question" placeholder="e.g., image generation, text summarization">
-    <button onclick="askAI()">Find AI Tools</button>
-    <p id="response"></p>
 </body>
 </html>
